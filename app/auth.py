@@ -46,15 +46,12 @@ def create_access_token(*, data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# todo: 定义新的依赖项函数get_current_user，在需要保护的路由中作为Depends参数使用
-#
-#
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError, decode
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -69,10 +66,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
             raise credentials_exception
     except PyJWTError:
         raise credentials_exception
-
-    # assuming you have a get_user function that gets a user from db
     user = db.query(User).filter(User.username == username).first()
     if user is None:
         raise credentials_exception
     return user
-#
+

@@ -7,8 +7,10 @@ class PaymentBase(BaseModel):
     timestamp: Optional[datetime]
     repayment_due_date: datetime
     is_overdue: bool
+    is_paid: bool
 
-class PaymentCreate(PaymentBase):
+class PaymentCreate(BaseModel):
+    principal: float
     user_id: int
 
 class Payment(PaymentBase):

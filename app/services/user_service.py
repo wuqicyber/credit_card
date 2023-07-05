@@ -16,9 +16,10 @@ def authenticate_user(db: Session, username: str, password: str):
     user = db.query(User).filter(User.username == username).first()
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not user.hashed_password or not verify_password(password, user.hashed_password):
         return False
     return user
+
 
 def create_user(db: Session, user: UserCreate):
     hashed_password = get_password_hash(user.hashed_password)

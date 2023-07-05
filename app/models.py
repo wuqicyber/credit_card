@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, Float, ForeignKey, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from datetime import datetime
 from app.database import Base
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -14,6 +15,7 @@ class User(Base):
     payments = relationship("Payment", back_populates="user")
     repayments = relationship("Repayment", back_populates="user")
 
+
 class Payment(Base):
     __tablename__ = "payments"
 
@@ -23,7 +25,9 @@ class Payment(Base):
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     repayment_due_date = Column(DateTime(timezone=True))
     is_overdue = Column(Boolean, default=False)
+    is_paid = Column(Boolean, default=False)  # 新增字段，表示是否已还款
     user = relationship("User", back_populates="payments")
+
 
 class Repayment(Base):
     __tablename__ = "repayments"
@@ -36,18 +40,3 @@ class Repayment(Base):
     user = relationship("User", back_populates="repayments")
     payment = relationship("Payment")
 
-
-# 好的，下面我的app.service文件夹中分别创建了user_service.py,payment_service.py,repayment_service.py等三个文件，
-# 我在app.controller文件夹中分别创建了user_controller.py, payment_controller.py, repayment_controller.py
-# 我的core文件夹中有个名为security.py中有如下代码
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-# 请先帮我完成user_service.py 与 user_controller.py
