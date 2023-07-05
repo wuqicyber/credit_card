@@ -5,6 +5,7 @@ from app.models import Payment
 from app.schemas import PaymentCreate
 from app.services import user_service, cache_service
 from datetime import timedelta, datetime
+from fastapi import HTTPException
 
 
 
@@ -12,11 +13,11 @@ def create_payment(db: Session, payment: PaymentCreate):
     # Query for the user to get the next_billing_date
     user = user_service.get_user_by_id(db, user_id=payment.user_id)
     if user is None:
-        raise ValueError("User not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
     # Decrease the credit_limit of the user
     if user.credit_limit < payment.principal:
-        raise ValueError("Credit limit exceeded")
+        raise HTTPException(status_code=404, detail="Credit limit exceeded")
     user.credit_limit -= payment.principal
 
     repayment_due_date = user.next_billing_date + timedelta(days=10)
